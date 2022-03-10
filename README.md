@@ -5,7 +5,7 @@
 Update version number on the files:
 
 * Visual Studio 2017, 2019 or 2020 project files including sdk, sdk.web, and sdk.worker
-* NuGet nuspec version
+* NuGet version on nuspec files, and version of dependencies
 * Version number defined on AssemblyInfo.cs
 
 ## Usage
