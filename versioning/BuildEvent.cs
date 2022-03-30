@@ -18,15 +18,18 @@ namespace versioning
         }
 
         public string VersionName => $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        public string NextBuild => $"{version.Major}.{version.Minor}.{version.Build + 1}.{version.Revision}";
 
         public void PrepareBuild()
         {
             StringBuilder code = new StringBuilder();
             code.AppendLine($"set BUILDSRC={buildsrc}");
             code.AppendLine($"set BUILDVER={VersionName}");
+            code.AppendLine($"set BUILDNEXT={NextBuild}");
 
             Environment.SetEnvironmentVariable("BUILDSRC", buildsrc);
             Environment.SetEnvironmentVariable("BUILDVER", VersionName);
+            Environment.SetEnvironmentVariable("BUILDNEXT", NextBuild);
 
             string path = Path.Combine(buildsrc, "vervs.cmd");
             if (!Directory.Exists(buildsrc))
