@@ -69,8 +69,8 @@ namespace versioning
             Console.WriteLine("  vervs <version-number> <repo-name>");
             Console.WriteLine("  Note: Setup environment variable [GitHubHome] if repo-name used");
             Console.WriteLine("Examples:");
-            Console.WriteLine("  vervs 1.0.9.0 c:\\devel\\GitHub\\sqlcode");
-            Console.WriteLine("  vervs 1.0.9.0 sqlcode");
+            Console.WriteLine("  vervs 1.0.9.0 c:\\devel\\GitHub\\vervs");
+            Console.WriteLine("  vervs 1.0.9.0 vervs");
             Console.WriteLine("  vervs 1.0.9.0");
         }
 
