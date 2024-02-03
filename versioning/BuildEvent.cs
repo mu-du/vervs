@@ -20,20 +20,36 @@ namespace versioning
         public string VersionName => $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
         public string NextBuild => $"{version.Major}.{version.Minor}.{version.Build + 1}.{version.Revision}";
 
-        public void PrepareBuild()
+        public void PrepareBuild(string fileName)
         {
+            string ext = Path.GetExtension(fileName);
             StringBuilder code = new StringBuilder();
-            code.AppendLine($"set BUILDSRC={buildsrc}");
-            code.AppendLine($"set BUILDVER={VersionName}");
-            code.AppendLine($"set BUILDNEXT={NextBuild}");
+            if (ext == ".ps1")
+            {
+                code.AppendLine($"$env:BUILDSRC=\"{buildsrc}\"");
+                code.AppendLine($"$env:BUILDVER={VersionName}");
+                code.AppendLine($"$env:BUILDNEXT={NextBuild}");
+            }
+            else
+            {
+                code.AppendLine($"set BUILDSRC={buildsrc}");
+                code.AppendLine($"set BUILDVER={VersionName}");
+                code.AppendLine($"set BUILDNEXT={NextBuild}");
+            }
 
             Environment.SetEnvironmentVariable("BUILDSRC", buildsrc);
             Environment.SetEnvironmentVariable("BUILDVER", VersionName);
             Environment.SetEnvironmentVariable("BUILDNEXT", NextBuild);
 
-            string path = Path.Combine(buildsrc, "vervs.cmd");
-            if (!Directory.Exists(buildsrc))
-                Directory.CreateDirectory(buildsrc);
+            string path;
+            if (!Path.IsPathRooted(fileName))
+                path = Path.Combine(buildsrc, fileName);
+            else
+                path = Path.GetFullPath(fileName);
+
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
 
             File.WriteAllText(path, code.ToString());
             Console.WriteLine($"created {path}");
