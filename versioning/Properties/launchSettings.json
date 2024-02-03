@@ -2,7 +2,7 @@
   "profiles": {
     "versioning": {
       "commandName": "Project",
-      "commandLineArgs": "1.0.9.0 sqlcode"
+      "commandLineArgs": "1.0.9.0 C:\\src\\cubic\\btfly-backend-ingestion\\Lambda\\Commonmodel"
     }
   }
 }

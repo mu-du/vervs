@@ -22,11 +22,22 @@ namespace versioning
                 try
                 {
                     var nuspec = new NuspecFile(file);
-                    NuspecFiles.Add(nuspec.Id, nuspec);
+                    if (!NuspecFiles.ContainsKey(nuspec.Id))
+                    {
+                        NuspecFiles.Add(nuspec.Id, nuspec);
+                    }
+                    else
+                    {
+                        var nuspec1 = NuspecFiles[nuspec.Id];
+                        if (nuspec1.Version < nuspec.Version)
+                        {
+                            NuspecFiles[nuspec.Id] = nuspec;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine(ex.Message);
+                    Console.Error.WriteLine($"Error in processing nuspec file \"{file}\",{ex.Message}");
                 }
             }
         }
