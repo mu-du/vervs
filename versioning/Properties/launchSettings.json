@@ -1,8 +1,9 @@
 {
   "profiles": {
     "versioning": {
-      "commandName": "Project",
-      "commandLineArgs": "1.0.9.0 C:\\src\\cubic\\btfly-backend-ingestion\\Lambda\\Commonmodel"
+        "commandName": "Project",
+        "commandLineArgs": "2.0.1.0 C:\\src\\trafficware\\tw.spm.data"
+        //"commandLineArgs": "1.0.9.0 C:\\src\\trafficware\\btfly-backend-ingestion\\Lambda\\Commonmodel"
     }
   }
 }

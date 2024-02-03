@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace versioning
+namespace versioning.project
 {
 
-    class ProjectFile
+    class ProjectFile : IVersioning
     {
         XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
 
