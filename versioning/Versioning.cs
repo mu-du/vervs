@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
+using versioning.project;
+using versioning.nuget;
 
 namespace versioning
 {
@@ -16,23 +18,23 @@ namespace versioning
             this.version = version;
         }
 
-        public void UpdateVersion(string root)
+        public void UpdateVersion(string rootPath)
         {
             //update *.csproj
-            var projects = new ProjectRepo(root);
+            var projects = new ProjectRepo(rootPath);
             projects.UpdateVersion(version);
 
             //update *.nuspec
-            NuspecRepo nuget = new NuspecRepo(root);
+            NuspecRepo nuget = new NuspecRepo(rootPath);
             nuget.UpdateVersion(version);
 
 
             //update AssemblyInfo.cs
-            var cs = new AssemblyInfoRepo(root);
+            var cs = new AssemblyInfoRepo(rootPath);
             cs.UpdateVersion(version);
 
             //overwrite Version.cs
-            var files = Directory.GetFiles(root, "Version.cs", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(rootPath, "Version.cs", SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 CreateFWVersion(file, version);

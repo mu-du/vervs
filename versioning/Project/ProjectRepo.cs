@@ -1,24 +1,39 @@
 ﻿using System;
 using System.IO;
 
-namespace versioning
+namespace versioning.project
 {
-    class ProjectRepo
+    class ProjectRepo : IVersioning
     {
-        private string[] files;
+        private string[] csProjectFiles;
+        private string[] vdProjectFiles;
+
         public ProjectRepo(string repo)
         {
-            this.files = Directory.GetFiles(repo, "*.csproj", SearchOption.AllDirectories);
+            this.csProjectFiles = Directory.GetFiles(repo, "*.csproj", SearchOption.AllDirectories);
+            this.vdProjectFiles = Directory.GetFiles(repo, "*.vdproj", SearchOption.AllDirectories);
         }
 
         public void UpdateVersion(Version ver)
         {
-            foreach (string file in files)
+            foreach (string file in csProjectFiles)
             {
                 var csproj = new ProjectFile(file);
                 csproj.UpdateVersion(ver);
                 csproj.Save();
             }
+
+            foreach (string file in vdProjectFiles)
+            {
+                var vdproj = new VdProjectFile(file);
+                vdproj.UpdateVersion(ver);
+                vdproj.Save();
+            }
+        }
+
+        public void Save()
+        {
+
         }
     }
 }

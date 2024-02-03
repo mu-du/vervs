@@ -1,8 +1,8 @@
 {
   "profiles": {
     "versioning": {
-      "commandName": "Project",
-      "commandLineArgs": "1.0.9.0 sqlcode"
+        "commandName": "Project",
+        "commandLineArgs": "2.0.1.0 C:\\src\\trafficware\\tw.spm.data"
     }
   }
 }
