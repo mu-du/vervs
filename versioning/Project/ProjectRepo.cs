@@ -19,6 +19,7 @@ namespace versioning.project
             foreach (string file in csProjectFiles)
             {
                 var csproj = new ProjectFile(file);
+                Console.WriteLine($"Process: {file}");
                 csproj.UpdateVersion(ver);
                 csproj.Save();
             }
@@ -26,6 +27,7 @@ namespace versioning.project
             foreach (string file in vdProjectFiles)
             {
                 var vdproj = new VdProjectFile(file);
+                Console.WriteLine($"Process: {file}");
                 vdproj.UpdateVersion(ver);
                 vdproj.Save();
             }
