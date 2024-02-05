@@ -59,7 +59,7 @@ namespace versioning.nuget
         public void UpdateVersion(Version ver)
         {
             this.Version = ver;
-            string _ver = ToString(ver);
+            string _ver = ver.ToString3();
             UpdateMetadataChild("version", _ver);
         }
 
@@ -110,7 +110,7 @@ namespace versioning.nuget
                         {
                             var first = nuspecFiles.FirstOrDefault(x => x.Id == _id);
                             if (first != null)
-                                dependency.SetAttributeValue("version", ToString(first.Version));
+                                dependency.SetAttributeValue("version", (first.Version.ToString3()));
                         }
                     }
                 }
@@ -119,7 +119,7 @@ namespace versioning.nuget
 
         public void CreateReleaseNotes(Version verison)
         {
-            string ver = ToString(verison);
+            string ver = verison.ToString3();
 
             XElement releaseNotes = metadata.Element(xmlns + "releaseNotes");
             if (releaseNotes == null)
@@ -172,10 +172,7 @@ namespace versioning.nuget
             }
         }
 
-        private static string ToString(Version version)
-        {
-            return $"{version.Major}.{version.Minor}.{version.Build}";
-        }
+
 
         public override string ToString()
         {

@@ -28,7 +28,7 @@ namespace versioning.project
             var L2 = project.Where(x => x.IndexOf(_PackageCode) > 0).ToArray();
             var L3 = project.Where(x => x.IndexOf(_ProductVersion) > 0).ToArray();
 
-            if (SetValue("ProductVersion", "8:", "", $"{ver.Major}.{ver.Minor}.{ver.Build}"))
+            if (SetValue("ProductVersion", "8:", "", ver.ToString3()))
             {
                 SetValue("ProductCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");
                 SetValue("PackageCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");

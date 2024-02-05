@@ -17,8 +17,8 @@ namespace versioning
             this.version = version;
         }
 
-        public string VersionName => $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-        public string NextBuild => $"{version.Major}.{version.Minor}.{version.Build + 1}.{version.Revision}";
+        public string VersionName => version.ToString4();
+        public string NextBuild => new Version(version.Major, version.Minor, version.Build + 1, version.Revision).ToString4();
 
         public void PrepareBuild(string fileName)
         {

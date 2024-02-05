@@ -54,12 +54,6 @@ namespace versioning.project
             }
         }
 
-
-        private static string ToString(Version version)
-        {
-            return $"{version.Major}.{version.Minor}.{version.Build}";
-        }
-
         /// <summary>
         /// Update project files
         /// </summary>
@@ -71,7 +65,7 @@ namespace versioning.project
             if (propertyGroup == null)
                 return;
 
-            SetValue("Version", $"{ver.Major}.{ver.Minor}.{ver.Build}", addIfNotExist: true);
+            SetValue("Version", ver.ToString3(), addIfNotExist: true);
             SetValue("AssemblyVersion", ver.ToString());
             SetValue("FileVersion", ver.ToString());
         }
