@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Xml.Linq;
 
 namespace versioning.project
@@ -53,12 +54,6 @@ namespace versioning.project
             }
         }
 
-
-        private static string ToString(Version version)
-        {
-            return $"{version.Major}.{version.Minor}.{version.Build}";
-        }
-
         /// <summary>
         /// Update project files
         /// </summary>
@@ -70,28 +65,32 @@ namespace versioning.project
             if (propertyGroup == null)
                 return;
 
-            XElement version = propertyGroup.Element("Version");
-            if (version != null)
+            SetValue("Version", ver.ToString3(), addIfNotExist: true);
+            SetValue("AssemblyVersion", ver.ToString());
+            SetValue("FileVersion", ver.ToString());
+        }
+
+        private bool SetValue(string key, string newValue, bool addIfNotExist = false)
+        {
+            XElement xElement = propertyGroup.Element(key);
+            if (xElement != null)
             {
-                version.Value = $"{ver.Major}.{ver.Minor}.{ver.Build}";
+                string oldValue = xElement.Value;
+                if (oldValue != newValue)
+                {
+                    xElement.Value = newValue;
+                    Console.WriteLine($"{key} = {oldValue} -> {newValue}");
+                    return true;
+                }
             }
-            else
+            else if(addIfNotExist)
             {
-                version = new XElement("Version", $"{ver.Major}.{ver.Minor}.{ver.Build}");
-                propertyGroup.Add(version);
+                xElement = new XElement(key, newValue);
+                propertyGroup.Add(xElement);
+                Console.WriteLine($"{key} = {newValue}");
             }
 
-            XElement assemblyVersion = propertyGroup.Element("AssemblyVersion");
-            if (assemblyVersion != null)
-            {
-                assemblyVersion.Value = ver.ToString();
-            }
-
-            XElement fileVersion = propertyGroup.Element("FileVersion");
-            if (fileVersion != null)
-            {
-                fileVersion.Value = ver.ToString();
-            }
+            return false;
         }
 
         public void UpdateAuthors(string value)
@@ -123,7 +122,7 @@ namespace versioning.project
         public void Save()
         {
             project.Save(path, SaveOptions.OmitDuplicateNamespaces);
-            Console.WriteLine($"Completed {path}");
+            Console.WriteLine($"Completed {Path.GetFileNameWithoutExtension(path)}");
         }
 
     }
