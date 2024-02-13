@@ -22,25 +22,39 @@ namespace versioning
 
         public void PrepareBuild(string fileName)
         {
+            string fullPath = GetFullPath(fileName);
+
+            List<string> lines = new List<string>();
+            if (File.Exists(fullPath))
+            {
+                lines.AddRange(File.ReadAllLines(fullPath));
+            }
+
             string ext = Path.GetExtension(fileName);
-            StringBuilder code = new StringBuilder();
             if (ext == ".ps1")
             {
-                code.AppendLine($"$env:BUILDSRC=\"{buildsrc}\"");
-                code.AppendLine($"$env:BUILDVER={VersionName}");
-                code.AppendLine($"$env:BUILDNEXT={NextBuild}");
+                Replace(lines, "BUILDSRC=", $"$env:BUILDSRC=\"{buildsrc}\"");
+                Replace(lines, "BUILDVER=", $"$env:BUILDVER=\"{VersionName}\"");
+                Replace(lines, "BUILDNEXT=", $"$env:BUILDNEXT=\"{NextBuild}\"");
             }
             else
             {
-                code.AppendLine($"set BUILDSRC={buildsrc}");
-                code.AppendLine($"set BUILDVER={VersionName}");
-                code.AppendLine($"set BUILDNEXT={NextBuild}");
+                Replace(lines, "BUILDSRC=", $"set BUILDSRC={buildsrc}");
+                Replace(lines, "BUILDVER=", $"set BUILDVER={VersionName}");
+                Replace(lines, "BUILDNEXT=", $"set BUILDNEXT={NextBuild}");
             }
 
             Environment.SetEnvironmentVariable("BUILDSRC", buildsrc);
             Environment.SetEnvironmentVariable("BUILDVER", VersionName);
             Environment.SetEnvironmentVariable("BUILDNEXT", NextBuild);
 
+
+            File.WriteAllLines(fullPath, lines);
+            Console.WriteLine($"created {fullPath}");
+        }
+
+        private string GetFullPath(string fileName)
+        {
             string path;
             if (!Path.IsPathRooted(fileName))
                 path = Path.Combine(buildsrc, fileName);
@@ -51,8 +65,21 @@ namespace versioning
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            File.WriteAllText(path, code.ToString());
-            Console.WriteLine($"created {path}");
+            return path;
+        }
+
+        private static void Replace(List<string> lines, string key, string value)
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].IndexOf(key) >= 0)
+                {
+                    lines[i] = value;
+                    return;
+                }
+            }
+
+            lines.Add(value);
         }
     }
 }
