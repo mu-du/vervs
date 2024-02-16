@@ -20,6 +20,11 @@ namespace versioning
         public string VersionName => version.ToString4();
         public string NextBuild => new Version(version.Major, version.Minor, version.Build + 1, version.Revision).ToString4();
 
+
+        const string BUILDSRC = "BUILDSRC";
+        const string BUILDVER = "BUILDVER";
+        const string BUILDNEXT = "BUILDNEXT";
+
         public void PrepareBuild(string fileName)
         {
             string fullPath = GetFullPath(fileName);
@@ -33,20 +38,20 @@ namespace versioning
             string ext = Path.GetExtension(fileName);
             if (ext == ".ps1")
             {
-                Replace(lines, "BUILDSRC=", $"$env:BUILDSRC=\"{buildsrc}\"");
-                Replace(lines, "BUILDVER=", $"$env:BUILDVER=\"{VersionName}\"");
-                Replace(lines, "BUILDNEXT=", $"$env:BUILDNEXT=\"{NextBuild}\"");
+                Replace(lines, BUILDSRC, $"$env:{BUILDSRC}=\"{buildsrc}\"");
+                Replace(lines, BUILDVER, $"$env:{BUILDVER}=\"{VersionName}\"");
+                Replace(lines, BUILDNEXT, $"$env:{BUILDNEXT}=\"{NextBuild}\"");
             }
             else
             {
-                Replace(lines, "BUILDSRC=", $"set BUILDSRC={buildsrc}");
-                Replace(lines, "BUILDVER=", $"set BUILDVER={VersionName}");
-                Replace(lines, "BUILDNEXT=", $"set BUILDNEXT={NextBuild}");
+                Replace(lines, BUILDSRC, $"set {BUILDSRC}={buildsrc}");
+                Replace(lines, BUILDVER, $"set {BUILDVER}={VersionName}");
+                Replace(lines, BUILDNEXT, $"set {BUILDNEXT}={NextBuild}");
             }
 
-            Environment.SetEnvironmentVariable("BUILDSRC", buildsrc);
-            Environment.SetEnvironmentVariable("BUILDVER", VersionName);
-            Environment.SetEnvironmentVariable("BUILDNEXT", NextBuild);
+            Environment.SetEnvironmentVariable(BUILDSRC, buildsrc);
+            Environment.SetEnvironmentVariable(BUILDVER, VersionName);
+            Environment.SetEnvironmentVariable(BUILDNEXT, NextBuild);
 
 
             File.WriteAllLines(fullPath, lines);

@@ -38,7 +38,8 @@ namespace versioning
                     }
                 }
             }
-
+            
+            buildsrc = Path.GetFullPath(buildsrc);
             if (!Directory.Exists(buildsrc))
             {
                 Console.WriteLine($"Directory not found: {buildsrc}");
