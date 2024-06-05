@@ -49,8 +49,8 @@ namespace versioning
                 buildEvent.PrepareBuild(envFile);
             }
 
-            NugetCmd cmd = new NugetCmd(buildsrc);
-            cmd.Generate(version: null);
+            NugetCmd cmd = new NugetCmd(buildsrc, version);
+            cmd.Generate();
         }
 
 
@@ -63,8 +63,8 @@ namespace versioning
             Versioning update = new Versioning(version);
             var projects = update.UpdateVersion(buildsrc, project);
 
-            NugetCmd cmd = new NugetCmd(buildsrc, projects);
-            cmd.Generate(version);
+            NugetCmd cmd = new NugetCmd(buildsrc, version, projects);
+            cmd.Generate();
 
             
         }

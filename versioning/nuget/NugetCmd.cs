@@ -6,11 +6,15 @@
     /// </summary>
     class NugetCmd
     {
+        private readonly Version version;
+
         private readonly string repo;
         private readonly string nugetPath;
 
         private readonly List<string> nuspecs;
         private readonly string[] nuspecFiles;
+
+        private readonly bool updateRepo;
 
         public string OutputDirectory { get; set; } = Environment.GetEnvironmentVariable("LocalNugetPath") ?? ".";
 
@@ -18,16 +22,20 @@
         /// 
         /// </summary>
         /// <param name="repo">Full path of repo directory</param>
-        public NugetCmd(string repo)
-            : this(repo, new string[] { })
+        public NugetCmd(string repo, Version version)
+            : this(repo, version, new string[] { })
         {
+            this.updateRepo = true;
         }
 
-        public NugetCmd(string repo, IEnumerable<string> projects)
+        public NugetCmd(string repo, Version version, IEnumerable<string> projects)
         {
             Console.WriteLine($"Repository: {repo}");
 
+            this.updateRepo = false;
             this.repo = repo;
+            this.version = version;
+
             this.nugetPath = Path.Combine(repo, ".nuget");
 
             try
@@ -57,20 +65,23 @@
             }
         }
 
-        public void Generate(Version? version)
+        public void Generate()
         {
             CreatePackFile();
-            CreatePushFile(version);
+            CreatePushFile();
             CreateDeleteFile();
-            CreateInstallFile(version);
+            CreateInstallFile();
         }
 
 
-        private int AddHeader(List<string> lines, string cmd)
+        private int AddHeader(List<string> lines, string cmd, bool usage)
         {
             lines.Add($"REM Total Nuget Packages: {nuspecs.Count}");
-            lines.Add($"REM Usage: ./{cmd} <version>");
-            lines.Add($"REM Example: ./{cmd} 1.0.0");
+            if (usage)
+            {
+                lines.Add($"REM Usage: ./{cmd} <version>");
+                lines.Add($"REM Example: ./{cmd} {version}");
+            }
             lines.Add("");
 
             return lines.Count;
@@ -84,7 +95,7 @@
             string cmd = "nuget-pack.cmd";
 
             List<string> lines = new List<string>();
-            AddHeader(lines, cmd);
+            AddHeader(lines, cmd, usage: false); // nuget pack
 
             var packs = nuspecs.Select(x => PackCommand(x, OutputDirectory));
             lines.AddRange(packs);
@@ -92,21 +103,21 @@
             Save(cmd, lines);
         }
 
-        public void CreatePushFile(Version? version)
+        public void CreatePushFile()
         {
             if (nuspecs.Count == 0)
                 return;
 
             string ver = "%1";
             string cmd = $"nuget-push.cmd";
-            if (version != null)
+            if (!updateRepo)
             {
                 ver = $"{version.Major}.{version.Minor}.{version.Build}";
                 cmd = $"nuget-push-{ver}.cmd";
             }
 
             List<string> lines = new List<string>();
-            AddHeader(lines, cmd);
+            AddHeader(lines, cmd, updateRepo);  // nuget push
 
             var pushes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x))
@@ -124,7 +135,7 @@
             string cmd = "nuget-delete.cmd";
 
             List<string> lines = new List<string>();
-            AddHeader(lines, cmd);
+            AddHeader(lines, cmd, usage: true); // nuget delete packages
 
             var deletes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x).ToLower())
@@ -135,14 +146,14 @@
         }
 
 
-        public void CreateInstallFile(Version? version)
+        public void CreateInstallFile()
         {
             if (nuspecs.Count == 0)
                 return;
 
             string ver = "%1";
             string cmd = "nuget-install.cmd";
-            if (version != null)
+            if (!updateRepo)
             {
                 ver = $"{version.Major}.{version.Minor}.{version.Build}";
                 cmd = $"nuget-install-{ver}.cmd";
@@ -150,7 +161,7 @@
 
 
             List<string> lines = new List<string>();
-            AddHeader(lines, cmd);
+            AddHeader(lines, cmd, updateRepo);  // nuget install-package
 
             var deletes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x).ToLower())
