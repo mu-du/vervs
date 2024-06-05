@@ -37,6 +37,10 @@
             this.version = version;
 
             this.nugetPath = Path.Combine(repo, ".nuget");
+            if(!Directory.Exists(nugetPath))
+            {
+                Directory.CreateDirectory(nugetPath);
+            }
 
             var _nuspecFiles = Directory.GetFiles(repo, "*.nuspec", SearchOption.AllDirectories);
             this.nuspecFiles = _nuspecFiles.Where(x => x.IndexOf("\\obj\\") == -1).ToArray();
