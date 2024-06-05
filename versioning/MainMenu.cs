@@ -13,12 +13,14 @@ namespace versioning
         private readonly Shell shell;
 
         private readonly Argument<string> versionArgument;
+        private readonly Option<bool> canGenerateCmdOption;
 
         public MainMenu()
         {
             this.shell = new Shell();
 
             this.versionArgument = new Argument<string>("version", () => "1.0.0.0", $"Build version.");
+            this.canGenerateCmdOption = new Option<bool>(new[] { "-c", "--cmd" }, () => false, $"Generate nuget command files.");
         }
 
         public int Run(string[] args, string title)
@@ -36,7 +38,7 @@ namespace versioning
 
         private Command SolutionCommand()
         {
-            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => Directory.GetCurrentDirectory(), $"Build source directory.");
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => Directory.GetCurrentDirectory(), $"Build repository directory.");
             Option<string> envFileOption = new Option<string>(new[] { "-e", "--env" }, () => "vervs.cmd", $"Build environment variable file name. e.g vervs.cmd or vervs.ps1");
 
             var cmd = new Command("update-repo", "Update version for all projects in repository.")
@@ -44,12 +46,14 @@ namespace versioning
                 versionArgument,
                 repoOption,
                 envFileOption,
+                canGenerateCmdOption,
             };
 
             cmd.SetHandler(shell.UpdateRepo,
                versionArgument,
                repoOption,
-               envFileOption
+               envFileOption,
+               canGenerateCmdOption
             );
 
             return cmd;
@@ -61,7 +65,7 @@ namespace versioning
             string repo = Path.GetFullPath(Path.Combine(directory, ".."));
             string projectName = Path.GetFileName(directory);
 
-            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => repo, $"Build source directory.");
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => repo, $"Build repository directory.");
             Option<string> projectOption = new Option<string>(new[] { "-p", "--project" }, () => projectName, $"Name of project.");
 
             var cmd = new Command("update-project", "Update version in a single project.")
@@ -69,12 +73,14 @@ namespace versioning
                 versionArgument,
                 repoOption,
                 projectOption,
+                canGenerateCmdOption,
             };
 
             cmd.SetHandler(shell.UpdateProject,
                versionArgument,
                repoOption,
-               projectOption
+               projectOption,
+               canGenerateCmdOption
                );
 
             return cmd;
@@ -85,7 +91,7 @@ namespace versioning
             string directory = Directory.GetCurrentDirectory();
 
             Argument<string> packageArgument = new Argument<string>("package-id", $"Package Id.");
-            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => directory, $"Build source directory.");
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => directory, $"Build repository directory.");
 
             var cmd = new Command("update-package", "Update package version in .nuspec files.")
             {
