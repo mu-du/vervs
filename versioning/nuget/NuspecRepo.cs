@@ -17,6 +17,8 @@ namespace versioning.nuget
             this.root = repo;
 
             string[] files = Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories);
+            files = files.Where(x => x.IndexOf("\\obj\\Debug\\") == -1).ToArray();
+
             foreach (string file in files)
             {
                 try

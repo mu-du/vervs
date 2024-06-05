@@ -5,16 +5,24 @@ namespace versioning
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Console.Title = "C# Code Versioning";
-            if (args.Length == 0)
+            Version? version = typeof(Program).Assembly.GetName().Version;
+            string title = $"C# Code Versioning for Visual Studio, v{version}";
+            Console.Title = title;
+
+            int result = -1;
+            try
             {
-                Help();
-                return;
+                var mainMenu = new MainMenu();
+                result = mainMenu.Run(args, title);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
             }
 
-            new Shell(args);
+            return result;
         }
 
         private static void Help()

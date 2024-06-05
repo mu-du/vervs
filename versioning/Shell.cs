@@ -1,18 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
 
 namespace versioning
 {
     class Shell
     {
-        public Shell(string[] args)
+        public Shell()
         {
-            string ver = "1.0.0.0";
-            if (args.Length > 0)
-            {
-                ver = args[0];
-            }
+        }
 
+        private static Version ParseVersion(string ver)
+        {
             Version version;
             if (!Version.TryParse(ver, out version))
             {
@@ -20,47 +19,39 @@ namespace versioning
                 Environment.Exit(-1);
             }
             Console.WriteLine($"Version = {version}");
+            return version;
+        }
 
 
-            string buildsrc = Directory.GetCurrentDirectory();
-            if (args.Length > 1)
-            {
-                buildsrc = args[1];
-                if (buildsrc.EndsWith("\\"))
-                    buildsrc = buildsrc.Substring(0, buildsrc.Length - 1);
+        public void UpdateRepo(string ver, string buildsrc, string envFile)
+        {
+            Version version = ParseVersion(ver);
 
-                if (!Path.IsPathRooted(buildsrc))
-                {
-                    string GitHubHome = Environment.GetEnvironmentVariable("GitHubHome");
-                    if (GitHubHome != null)
-                    {
-                        buildsrc = Path.Combine(GitHubHome, buildsrc);
-                    }
-                }
-            }
-            
-            buildsrc = Path.GetFullPath(buildsrc);
             if (!Directory.Exists(buildsrc))
             {
                 Console.WriteLine($"Directory not found: {buildsrc}");
                 Environment.Exit(-1);
             }
-            Console.WriteLine($"Directory = {buildsrc}");
 
+            Console.WriteLine($"Directory = {buildsrc}");
 
             Versioning update = new Versioning(version);
             update.UpdateVersion(buildsrc);
 
-            if (args.Length > 2)
+            if (!string.IsNullOrEmpty(envFile))
             {
-                var envFile = args[2];
                 var buildEvent = new BuildEvent(buildsrc, version);
                 buildEvent.PrepareBuild(envFile);
             }
         }
 
+        public void UpdateProject(string ver, string repo, string project)
+        {
+            Version version = ParseVersion(ver);
+            Versioning update = new Versioning(version);
+            update.UpdateVersion(repo);
 
-
-
+            
+        }
     }
 }
