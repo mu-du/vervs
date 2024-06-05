@@ -6,6 +6,8 @@ namespace versioning
 {
     class Shell
     {
+        public const string UNDEFINED = "N/A";
+
         public Shell()
         {
         }
@@ -29,6 +31,8 @@ namespace versioning
         /// <param name="repo"></param>
         private static void CheckRepoDirectory(string repo)
         {
+            repo = Path.GetFullPath(repo);
+
             if (!Directory.Exists(repo))
             {
                 History.Error($"Directory not found: {repo}");
@@ -39,19 +43,30 @@ namespace versioning
                 .Select(x => Path.GetFileName(x))
                 .ToArray();
 
-            if (!directories.Contains(".git"))
+            if (!IsRepoDirectory(repo))
             {
                 History.Error($"Invalid git repository: {repo}");
                 Environment.Exit(-3);
             }
 
-            Console.WriteLine($"Directory = {repo}");
+            Console.WriteLine($"Reposity Directory = {repo}");
         }
+
+
+        public static bool IsRepoDirectory(string repo)
+        {
+            string[] directories = Directory.GetDirectories(repo)
+                .Select(x => Path.GetFileName(x))
+                .ToArray();
+
+            return directories.Contains(".git");
+        }
+
 
         public void UpdateRepo(string ver, string repo, string envFile, bool nugetCmd)
         {
-            Version version = ParseVersion(ver);
             CheckRepoDirectory(repo);
+            Version version = ParseVersion(ver);
 
             try
             {
@@ -80,10 +95,22 @@ namespace versioning
 
         public void UpdateProject(string ver, string repo, string project, bool nugetCmd)
         {
-            Console.WriteLine($"Project = {project}");
+            if (repo == UNDEFINED)
+            {
+                History.Error("Repo is expected.");
+                return;
+            }
 
-            Version version = ParseVersion(ver);
+            if (project == UNDEFINED)
+            {
+                History.Error("Project name is expected.");
+                return;
+            }
+
             CheckRepoDirectory(repo);
+            Version version = ParseVersion(ver);
+
+            Console.WriteLine($"Project = {project}");
 
             try
             {
@@ -104,10 +131,11 @@ namespace versioning
 
         public void UpdatePackage(string packageId, string ver, string repo)
         {
-            Console.WriteLine($"PackageId = {packageId}");
 
-            Version version = ParseVersion(ver);
             CheckRepoDirectory(repo);
+            Version version = ParseVersion(ver);
+
+            Console.WriteLine($"PackageId = {packageId}");
 
             try
             {

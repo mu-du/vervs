@@ -62,8 +62,28 @@ namespace versioning
         private Command ProjectCommand()
         {
             string directory = Directory.GetCurrentDirectory();
-            string repo = Path.GetFullPath(Path.Combine(directory, ".."));
-            string projectName = Path.GetFileName(directory);
+
+            string repo;
+            string projectName;
+
+            if (Shell.IsRepoDirectory(directory))
+            {
+                repo = directory;
+                projectName = Shell.UNDEFINED;
+            }
+            else
+            {
+                repo = Path.GetFullPath(Path.Combine(directory, ".."));
+                if (Shell.IsRepoDirectory(repo))
+                {
+                    projectName = Path.GetFileName(directory);
+                }
+                else
+                {
+                    repo = Shell.UNDEFINED;
+                    projectName = Shell.UNDEFINED;
+                }
+            }
 
             Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => repo, $"Build repository directory.");
             Option<string> projectOption = new Option<string>(new[] { "-p", "--project" }, () => projectName, $"Name of project.");
