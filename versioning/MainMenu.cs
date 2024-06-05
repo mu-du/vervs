@@ -27,6 +27,7 @@ namespace versioning
             {
                 SolutionCommand(),
                 ProjectCommand(),
+                UpdatePackageCommand(),
             };
 
             int exit = rootCommand.InvokeAsync(args).Result;
@@ -74,6 +75,29 @@ namespace versioning
                versionArgument,
                repoOption,
                projectOption
+               );
+
+            return cmd;
+        }
+
+        private Command UpdatePackageCommand()
+        {
+            string directory = Directory.GetCurrentDirectory();
+
+            Argument<string> packageArgument = new Argument<string>("package-id", $"Package Id.");
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => directory, $"Build source directory.");
+
+            var cmd = new Command("update-package", "Update package version in .nuspec files.")
+            {
+                packageArgument,
+                versionArgument,
+                repoOption,
+            };
+
+            cmd.SetHandler(shell.UpdatePackage,
+               packageArgument,
+               versionArgument,
+               repoOption
                );
 
             return cmd;

@@ -61,12 +61,21 @@ namespace versioning
             CheckBuildSrcDirectory(buildsrc);
 
             Versioning update = new Versioning(version);
-            var projects = update.UpdateVersion(buildsrc, project);
+            var projects = update.UpdateProjectVersion(buildsrc, project);
 
             NugetCmd cmd = new NugetCmd(buildsrc, version, projects);
             cmd.Generate();
 
             
+        }
+
+        public void UpdatePackage(string packageId, string ver, string buildsrc)
+        {
+            Version version = ParseVersion(ver);
+            CheckBuildSrcDirectory(buildsrc);
+
+            Versioning update = new Versioning(version);
+            update.UpdatePackageVersion(buildsrc, packageId);
         }
     }
 }

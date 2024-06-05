@@ -36,7 +36,7 @@ namespace versioning.project
             }
         }
 
-        public void UpdateVersion(Version ver, string projectName)
+        public void UpdateProjectVersion(Version ver, string projectName)
         {
             this.csProjectFiles = Directory.GetFiles(Path.Combine(repo, projectName), "*.csproj", SearchOption.AllDirectories);
 

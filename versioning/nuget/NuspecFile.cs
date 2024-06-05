@@ -138,8 +138,34 @@ namespace versioning.nuget
                     }
                 }
             }
-            
+
             return list;
+        }
+
+        public void UpdatePackageVersion(string packageId, Version version)
+        {
+            XElement? dependencies = metadata?.Element(xmlns + "dependencies");
+            if (dependencies != null)
+            {
+                bool changed = false;
+                var groups = dependencies.Elements(xmlns + "group");
+                foreach (var group in groups)
+                {
+                    var dependencyElements = group.Elements(xmlns + "dependency");
+                    foreach (var dependency in dependencyElements)
+                    {
+                        var _id = (string?)dependency.Attribute("id");
+                        if (_id != null && _id == packageId)
+                        {
+                            dependency.SetAttributeValue("version", version?.ToString3());
+                            changed = true;
+                        }
+                    }
+                }
+
+                if (changed)
+                    Save();
+            }
         }
 
         public void CreateReleaseNotes(Version verison)

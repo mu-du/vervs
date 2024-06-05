@@ -52,17 +52,17 @@ namespace versioning
         /// </summary>
         /// <param name="repo"></param>
         /// <param name="projectName">Full path of repo directory</param>
-        public List<string> UpdateVersion(string repo, string projectName)
+        public List<string> UpdateProjectVersion(string repo, string projectName)
         {
 
             //update *.nuspec
             NuspecRepo nuget = new NuspecRepo(repo);
-            List<string> projects = nuget.UpdateVersion(version, projectName);
+            List<string> projects = nuget.UpdateProjectVersion(version, projectName);
 
             var projectRepo = new ProjectRepo(repo);
             foreach (string project in projects)
             {
-                projectRepo.UpdateVersion(version, project);
+                projectRepo.UpdateProjectVersion(version, project);
             }
 
             //update AssemblyInfo.cs
@@ -70,6 +70,12 @@ namespace versioning
             cs.UpdateVersion(version);
 
             return projects;
+        }
+
+        public void UpdatePackageVersion(string repo, string packageId)
+        {
+            NuspecRepo nuget = new NuspecRepo(repo);
+            nuget.UpdatePackageVersion(packageId, version);
         }
 
 
@@ -93,5 +99,6 @@ namespace versioning
             File.WriteAllLines(path, lines);
             Console.WriteLine($"Completed {path}");
         }
+
     }
 }

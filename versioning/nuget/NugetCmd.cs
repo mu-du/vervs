@@ -38,31 +38,22 @@
 
             this.nugetPath = Path.Combine(repo, ".nuget");
 
-            try
+            var _nuspecFiles = Directory.GetFiles(repo, "*.nuspec", SearchOption.AllDirectories);
+            this.nuspecFiles = _nuspecFiles.Where(x => x.IndexOf("\\obj\\") == -1).ToArray();
+
+            if (projects.Any())
             {
-                this.nuspecFiles = Directory.GetFiles(nugetPath, "*.nuspec");
-
-                if (projects.Any())
-                {
-                    this.nuspecFiles = this.nuspecFiles
-                    .Where(x => projects.Contains(Path.GetFileNameWithoutExtension(x)))
-                    .ToArray();
-                }
-
-                this.nuspecs = nuspecFiles
-                    .Select(x => Path.GetFileName(x))
-                    .OrderBy(x => x)
-                    .ToList();
-
-                Console.WriteLine($"Total {nuspecs.Count} .nuspec files");
+                this.nuspecFiles = this.nuspecFiles
+                .Where(x => projects.Contains(Path.GetFileNameWithoutExtension(x)))
+                .ToArray();
             }
-            catch (DirectoryNotFoundException)
-            {
-                this.nuspecFiles = new string[] { };
-                this.nuspecs = new List<string>();
 
-                Console.WriteLine($"Directory not found: {nugetPath}");
-            }
+            this.nuspecs = nuspecFiles
+                .Select(x => Path.GetFileName(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            Console.WriteLine($"Total {nuspecs.Count} .nuspec files");
         }
 
         public void Generate()
