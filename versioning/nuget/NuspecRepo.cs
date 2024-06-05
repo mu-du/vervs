@@ -54,7 +54,7 @@ namespace versioning.nuget
             UpdateVersion(ver, new NuspecRepo[] { });
         }
 
-        public void UpdateVersion(Version ver, string project)
+        public List<string> UpdateVersion(Version ver, string project)
         {
             List<NuspecFile> files = new List<NuspecFile>();
             foreach (NuspecFile nuspec in NuspecFiles.Values)
@@ -76,6 +76,7 @@ namespace versioning.nuget
             }
 
             UpdateVersion(ver, files);
+            return files.Select(x => x.Id).ToList();
         }
 
         /// <summary>
