@@ -1,8 +1,9 @@
 {
   "profiles": {
     "versioning": {
-        "commandName": "Project",
-        "commandLineArgs": "update-repo 1.0.12.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1"
+      "commandName": "Project",
+      "commandLineArgs-1": "update-repo 1.0.12.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1",
+      "commandLineArgs": "update-project 1.0.12.0 -r C:\\src\\trafficware\\atms.core -p tw.Common"
     }
   }
 }

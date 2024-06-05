@@ -22,11 +22,8 @@ namespace versioning
             return version;
         }
 
-
-        public void UpdateRepo(string ver, string buildsrc, string envFile)
+        private static void CheckBuildSrcDirectory(string buildsrc)
         {
-            Version version = ParseVersion(ver);
-
             if (!Directory.Exists(buildsrc))
             {
                 Console.WriteLine($"Directory not found: {buildsrc}");
@@ -34,6 +31,13 @@ namespace versioning
             }
 
             Console.WriteLine($"Directory = {buildsrc}");
+        }
+
+        public void UpdateRepo(string ver, string buildsrc, string envFile)
+        {
+            Version version = ParseVersion(ver);
+            CheckBuildSrcDirectory(buildsrc);
+
 
             Versioning update = new Versioning(version);
             update.UpdateVersion(buildsrc);
@@ -45,11 +49,15 @@ namespace versioning
             }
         }
 
-        public void UpdateProject(string ver, string repo, string project)
+
+
+        public void UpdateProject(string ver, string buildsrc, string project)
         {
             Version version = ParseVersion(ver);
+            CheckBuildSrcDirectory(buildsrc);
+
             Versioning update = new Versioning(version);
-            update.UpdateVersion(repo);
+            update.UpdateVersion(buildsrc, project);
 
             
         }

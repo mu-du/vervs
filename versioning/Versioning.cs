@@ -42,6 +42,11 @@ namespace versioning
 
         }
 
+        public void UpdateVersion(string rootPath, string projectName)
+        {
+
+        }
+
 
         /// <summary>
         /// Update Version.cs

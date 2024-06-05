@@ -14,21 +14,11 @@ namespace versioning
 
         private readonly Argument<string> versionArgument;
 
-        private readonly Option<string> repoOption;
-        private readonly Option<string> envFileOption;
-        private readonly Option<string> projectOption;
-
         public MainMenu()
         {
             this.shell = new Shell();
 
             this.versionArgument = new Argument<string>("version", () => "1.0.0.0", $"Build version.");
-
-            this.repoOption = new Option<string>(new[] { "-r", "--repo" }, () => Directory.GetCurrentDirectory(), $"Build source directory.");
-            this.envFileOption = new Option<string>(new[] { "-e", "--env" }, () => "vervs.cmd", $"Build environment variable file name. e.g vervs.cmd or vervs.ps1");
-
-            this.projectOption = new Option<string>(new[] { "-p", "--project" }, () => Directory.GetCurrentDirectory(), $"Name of project.");
-
         }
 
         public int Run(string[] args, string title)
@@ -45,6 +35,8 @@ namespace versioning
 
         private Command SolutionCommand()
         {
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => Directory.GetCurrentDirectory(), $"Build source directory.");
+            Option<string> envFileOption = new Option<string>(new[] { "-e", "--env" }, () => "vervs.cmd", $"Build environment variable file name. e.g vervs.cmd or vervs.ps1");
 
             var cmd = new Command("update-repo", "Update version for all projects in repository.")
             {
@@ -64,10 +56,18 @@ namespace versioning
 
         private Command ProjectCommand()
         {
+            string directory = Directory.GetCurrentDirectory();
+            string repo = Path.GetFullPath(Path.Combine(directory, ".."));
+            string projectName = Path.GetFileName(directory);
+
+            Option<string> repoOption = new Option<string>(new[] { "-r", "--repo" }, () => repo, $"Build source directory.");
+            Option<string> projectOption = new Option<string>(new[] { "-p", "--project" }, () => projectName, $"Name of project.");
 
             var cmd = new Command("update-project", "Update version in a single project.")
             {
                 versionArgument,
+                repoOption,
+                projectOption,
             };
 
             cmd.SetHandler(shell.UpdateProject,
