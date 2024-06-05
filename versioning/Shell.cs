@@ -1,66 +1,72 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
+using versioning.nuget;
 
 namespace versioning
 {
     class Shell
     {
-        public Shell(string[] args)
+        public Shell()
         {
-            string ver = "1.0.0.0";
-            if (args.Length > 0)
-            {
-                ver = args[0];
-            }
+        }
 
-            Version version;
+        private static Version ParseVersion(string ver)
+        {
+            Version? version;
             if (!Version.TryParse(ver, out version))
             {
                 Console.WriteLine($"Wrong version number: {ver}");
                 Environment.Exit(-1);
             }
             Console.WriteLine($"Version = {version}");
+            return version;
+        }
 
-
-            string buildsrc = Directory.GetCurrentDirectory();
-            if (args.Length > 1)
-            {
-                buildsrc = args[1];
-                if (buildsrc.EndsWith("\\"))
-                    buildsrc = buildsrc.Substring(0, buildsrc.Length - 1);
-
-                if (!Path.IsPathRooted(buildsrc))
-                {
-                    string GitHubHome = Environment.GetEnvironmentVariable("GitHubHome");
-                    if (GitHubHome != null)
-                    {
-                        buildsrc = Path.Combine(GitHubHome, buildsrc);
-                    }
-                }
-            }
-            
-            buildsrc = Path.GetFullPath(buildsrc);
+        private static void CheckBuildSrcDirectory(string buildsrc)
+        {
             if (!Directory.Exists(buildsrc))
             {
                 Console.WriteLine($"Directory not found: {buildsrc}");
                 Environment.Exit(-1);
             }
+
             Console.WriteLine($"Directory = {buildsrc}");
+        }
+
+        public void UpdateRepo(string ver, string buildsrc, string envFile)
+        {
+            Version version = ParseVersion(ver);
+            CheckBuildSrcDirectory(buildsrc);
 
 
             Versioning update = new Versioning(version);
             update.UpdateVersion(buildsrc);
 
-            if (args.Length > 2)
+            if (!string.IsNullOrEmpty(envFile))
             {
-                var envFile = args[2];
                 var buildEvent = new BuildEvent(buildsrc, version);
                 buildEvent.PrepareBuild(envFile);
             }
+
+            NugetCmd cmd = new NugetCmd(buildsrc, version);
+            cmd.Generate();
         }
 
 
 
+        public void UpdateProject(string ver, string buildsrc, string project)
+        {
+            Version version = ParseVersion(ver);
+            CheckBuildSrcDirectory(buildsrc);
 
+            Versioning update = new Versioning(version);
+            var projects = update.UpdateVersion(buildsrc, project);
+
+            NugetCmd cmd = new NugetCmd(buildsrc, version, projects);
+            cmd.Generate();
+
+            
+        }
     }
 }

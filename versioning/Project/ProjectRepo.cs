@@ -5,11 +5,14 @@ namespace versioning.project
 {
     class ProjectRepo : IVersioning
     {
+        private readonly string repo;
         private string[] csProjectFiles;
-        private string[] vdProjectFiles;
+        private readonly string[] vdProjectFiles;
 
         public ProjectRepo(string repo)
         {
+            this.repo = repo;
+
             this.csProjectFiles = Directory.GetFiles(repo, "*.csproj", SearchOption.AllDirectories);
             this.vdProjectFiles = Directory.GetFiles(repo, "*.vdproj", SearchOption.AllDirectories);
         }
@@ -31,6 +34,20 @@ namespace versioning.project
                 vdproj.UpdateVersion(ver);
                 vdproj.Save();
             }
+        }
+
+        public void UpdateVersion(Version ver, string projectName)
+        {
+            this.csProjectFiles = Directory.GetFiles(Path.Combine(repo, projectName), "*.csproj", SearchOption.AllDirectories);
+
+            foreach (string file in csProjectFiles)
+            {
+                var csproj = new ProjectFile(file);
+                Console.WriteLine($"Process: {file}");
+                csproj.UpdateVersion(ver);
+                csproj.Save();
+            }
+
         }
 
         public void Save()

@@ -10,13 +10,13 @@ namespace versioning.nuget
 {
     class NuspecFile
     {
-        private string path;
-        private XNamespace xmlns = "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd";
-        private XElement package;
-        private XElement metadata;
+        private readonly string path;
+        private readonly XNamespace xmlns = "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd";
+        private readonly XElement? package;
+        private readonly XElement? metadata;
 
         public string Id { get; }
-        public Version Version { get; set; }
+        public Version? Version { get; set; }
 
         public NuspecFile(string path)
         {
@@ -26,7 +26,7 @@ namespace versioning.nuget
             this.xmlns = package.GetDefaultNamespace();
 
             this.metadata = package.Element(xmlns + "metadata");
-            XElement id = metadata.Element(xmlns + "id");
+            XElement? id = metadata?.Element(xmlns + "id");
 
             if (id == null)
             {
@@ -35,16 +35,16 @@ namespace versioning.nuget
 
             this.Id = (string)id;
 
-            XElement version = metadata.Element(xmlns + "version");
+            XElement? version = metadata?.Element(xmlns + "version");
             if (version != null)
             {
                 Version = new Version(version.Value);
             }
         }
 
-        private void AddOrUpdateElement(XElement parent, string name, string value)
+        private void AddOrUpdateElement(XElement? parent, string name, string value)
         {
-            XElement element = parent.Element(xmlns + name);
+            XElement? element = parent?.Element(xmlns + name);
             if (element != null)
             {
                 element.Value = value;
@@ -52,7 +52,7 @@ namespace versioning.nuget
             else
             {
                 element = new XElement(name, value);
-                parent.Add(element);
+                parent?.Add(element);
             }
         }
 
@@ -90,13 +90,13 @@ namespace versioning.nuget
 
         public void Save()
         {
-            package.Save(path, SaveOptions.OmitDuplicateNamespaces);
+            package?.Save(path, SaveOptions.OmitDuplicateNamespaces);
             Console.WriteLine($"Completed {path}");
         }
 
         public void UpdateDependecies(IEnumerable<NuspecFile> nuspecFiles)
         {
-            XElement dependencies = metadata.Element(xmlns + "dependencies");
+            XElement? dependencies = metadata?.Element(xmlns + "dependencies");
             if (dependencies != null)
             {
                 var groups = dependencies.Elements(xmlns + "group");
@@ -105,27 +105,52 @@ namespace versioning.nuget
                     var dependencyElements = group.Elements(xmlns + "dependency");
                     foreach (var dependency in dependencyElements)
                     {
-                        var _id = (string)dependency.Attribute("id");
+                        var _id = (string?)dependency.Attribute("id");
                         if (_id != null)
                         {
                             var first = nuspecFiles.FirstOrDefault(x => x.Id == _id);
                             if (first != null)
-                                dependency.SetAttributeValue("version", (first.Version.ToString3()));
+                                dependency.SetAttributeValue("version", (first.Version?.ToString3()));
                         }
                     }
                 }
             }
         }
 
+        public List<string> GetDependecies()
+        {
+            List<string> list = new List<string>();
+            XElement? dependencies = metadata?.Element(xmlns + "dependencies");
+            if (dependencies != null)
+            {
+                var groups = dependencies.Elements(xmlns + "group");
+                foreach (var group in groups)
+                {
+                    var dependencyElements = group.Elements(xmlns + "dependency");
+                    foreach (var dependency in dependencyElements)
+                    {
+                        var _id = (string?)dependency.Attribute("id");
+                        if (_id != null)
+                        {
+                            list.Add(_id);
+                            string? ver = (string?)dependency.Attribute("version");
+                        }
+                    }
+                }
+            }
+            
+            return list;
+        }
+
         public void CreateReleaseNotes(Version verison)
         {
             string ver = verison.ToString3();
 
-            XElement releaseNotes = metadata.Element(xmlns + "releaseNotes");
+            XElement? releaseNotes = metadata?.Element(xmlns + "releaseNotes");
             if (releaseNotes == null)
             {
                 releaseNotes = new XElement("releaseNotes", string.Empty);
-                metadata.Add(releaseNotes);
+                metadata?.Add(releaseNotes);
             }
 
             bool found = false;
@@ -133,7 +158,7 @@ namespace versioning.nuget
             {
                 while (true)
                 {
-                    string line = reader.ReadLine();
+                    string? line = reader.ReadLine();
                     if (line == null)
                         break;
 

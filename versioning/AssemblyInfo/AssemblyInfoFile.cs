@@ -5,8 +5,8 @@ namespace versioning
 {
     class AssemblyInfoFile
     {
-        private string path;
-        private string[] lines;
+        private readonly string path;
+        private readonly string[]? lines;
         bool dirty = false;
 
         public AssemblyInfoFile(string path)

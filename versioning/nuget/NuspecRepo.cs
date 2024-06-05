@@ -4,19 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace versioning.nuget
 {
     class NuspecRepo : IVersioning
     {
         private Dictionary<string, NuspecFile> NuspecFiles { get; } = new Dictionary<string, NuspecFile>();
-        private string root;
+        private readonly string root;
 
         public NuspecRepo(string repo)
         {
             this.root = repo;
 
             string[] files = Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories);
+            files = files.Where(x => x.IndexOf("\\obj\\Debug\\") == -1).ToArray();
+
             foreach (string file in files)
             {
                 try
@@ -51,6 +54,31 @@ namespace versioning.nuget
             UpdateVersion(ver, new NuspecRepo[] { });
         }
 
+        public List<string> UpdateVersion(Version ver, string project)
+        {
+            List<NuspecFile> files = new List<NuspecFile>();
+            foreach (NuspecFile nuspec in NuspecFiles.Values)
+            {
+                if (nuspec.Id == project)
+                {
+                    nuspec.Version = ver;
+                    files.Add(nuspec);
+                }
+                else
+                {
+                    var dependencies = nuspec.GetDependecies();
+                    if (dependencies.Contains(project))
+                    {
+                        nuspec.Version = ver;
+                        files.Add(nuspec);
+                    }
+                }
+            }
+
+            UpdateVersion(ver, files);
+            return files.Select(x => x.Id).ToList();
+        }
+
         /// <summary>
         /// Update dependency version from other repositories
         /// </summary>
@@ -74,7 +102,7 @@ namespace versioning.nuget
             UpdateVersion(ver, NuspecFiles.Values);
         }
 
-        private void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
+        private static void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
         {
             foreach (var nuspec in nuspecFiles)
             {
