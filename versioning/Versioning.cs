@@ -44,7 +44,17 @@ namespace versioning
 
         public void UpdateVersion(string rootPath, string projectName)
         {
+            var projects = new ProjectRepo(rootPath);
+            projects.UpdateVersion(version, projectName);
 
+            //update *.nuspec
+            NuspecRepo nuget = new NuspecRepo(rootPath);
+            nuget.UpdateVersion(version, projectName);
+
+
+            //update AssemblyInfo.cs
+            var cs = new AssemblyInfoRepo(rootPath, projectName);
+            cs.UpdateVersion(version);
         }
 
 

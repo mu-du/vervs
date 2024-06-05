@@ -15,8 +15,15 @@ namespace versioning
             this.files = Directory.GetFiles(repo, "AssemblyInfo.cs", SearchOption.AllDirectories);
         }
 
+        public AssemblyInfoRepo(string repo, string project)
+        {
+            this.repo = repo;
+
+            this.files = Directory.GetFiles(Path.Combine(repo, project), "AssemblyInfo.cs", SearchOption.AllDirectories);
+        }
+
         public void UpdateVersion(Version version)
-        { 
+        {
             foreach (string file in files)
             {
                 var cs = new AssemblyInfoFile(file);

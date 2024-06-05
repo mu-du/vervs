@@ -3,7 +3,7 @@
     "versioning": {
       "commandName": "Project",
       "commandLineArgs-1": "update-repo 1.0.12.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1",
-      "commandLineArgs": "update-project 1.0.12.0 -r C:\\src\\trafficware\\atms.core -p tw.Common"
+      "commandLineArgs": "update-project 1.0.12.0 -r C:\\src\\trafficware\\atms.core -p tw.Database"
     }
   }
 }

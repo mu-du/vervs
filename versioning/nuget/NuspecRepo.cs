@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace versioning.nuget
 {
@@ -51,6 +52,30 @@ namespace versioning.nuget
         public void UpdateVersion(Version ver)
         {
             UpdateVersion(ver, new NuspecRepo[] { });
+        }
+
+        public void UpdateVersion(Version ver, string project)
+        {
+            List<NuspecFile> files = new List<NuspecFile>();
+            foreach (NuspecFile nuspec in NuspecFiles.Values)
+            {
+                if (nuspec.Id == project)
+                {
+                    nuspec.Version = ver;
+                    files.Add(nuspec);
+                }
+                else
+                {
+                    var dependencies = nuspec.GetDependecies();
+                    if (dependencies.Contains(project))
+                    {
+                        nuspec.Version = ver;
+                        files.Add(nuspec);
+                    }
+                }
+            }
+
+            UpdateVersion(ver, files);
         }
 
         /// <summary>

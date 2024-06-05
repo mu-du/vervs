@@ -117,6 +117,31 @@ namespace versioning.nuget
             }
         }
 
+        public List<string> GetDependecies()
+        {
+            List<string> list = new List<string>();
+            XElement dependencies = metadata.Element(xmlns + "dependencies");
+            if (dependencies != null)
+            {
+                var groups = dependencies.Elements(xmlns + "group");
+                foreach (var group in groups)
+                {
+                    var dependencyElements = group.Elements(xmlns + "dependency");
+                    foreach (var dependency in dependencyElements)
+                    {
+                        var _id = (string)dependency.Attribute("id");
+                        if (_id != null)
+                        {
+                            list.Add(_id);
+                            string ver = (string)dependency.Attribute("version");
+                        }
+                    }
+                }
+            }
+            
+            return list;
+        }
+
         public void CreateReleaseNotes(Version verison)
         {
             string ver = verison.ToString3();
