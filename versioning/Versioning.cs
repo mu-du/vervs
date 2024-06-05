@@ -18,23 +18,27 @@ namespace versioning
             this.version = version;
         }
 
-        public void UpdateVersion(string rootPath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="repo">Full path of repo directory</param>
+        public void UpdateVersion(string repo)
         {
             //update *.csproj
-            var projectRepo = new ProjectRepo(rootPath);
+            var projectRepo = new ProjectRepo(repo);
             projectRepo.UpdateVersion(version);
 
             //update *.nuspec
-            NuspecRepo nuget = new NuspecRepo(rootPath);
+            NuspecRepo nuget = new NuspecRepo(repo);
             nuget.UpdateVersion(version);
 
 
             //update AssemblyInfo.cs
-            var cs = new AssemblyInfoRepo(rootPath);
+            var cs = new AssemblyInfoRepo(repo);
             cs.UpdateVersion(version);
 
             //overwrite Version.cs
-            var files = Directory.GetFiles(rootPath, "Version.cs", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(repo, "Version.cs", SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 CreateFWVersion(file, version);
@@ -42,22 +46,29 @@ namespace versioning
 
         }
 
-        public void UpdateVersion(string rootPath, string projectName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="projectName">Full path of repo directory</param>
+        public List<string> UpdateVersion(string repo, string projectName)
         {
 
             //update *.nuspec
-            NuspecRepo nuget = new NuspecRepo(rootPath);
+            NuspecRepo nuget = new NuspecRepo(repo);
             List<string> projects = nuget.UpdateVersion(version, projectName);
 
-            var projectRepo = new ProjectRepo(rootPath);
+            var projectRepo = new ProjectRepo(repo);
             foreach (string project in projects)
             {
                 projectRepo.UpdateVersion(version, project);
             }
 
             //update AssemblyInfo.cs
-            var cs = new AssemblyInfoRepo(rootPath, projectName);
+            var cs = new AssemblyInfoRepo(repo, projectName);
             cs.UpdateVersion(version);
+
+            return projects;
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.ConstrainedExecution;
+using versioning.nuget;
 
 namespace versioning
 {
@@ -47,6 +48,9 @@ namespace versioning
                 var buildEvent = new BuildEvent(buildsrc, version);
                 buildEvent.PrepareBuild(envFile);
             }
+
+            NugetCmd cmd = new NugetCmd(buildsrc);
+            cmd.Generate();
         }
 
 
@@ -57,7 +61,10 @@ namespace versioning
             CheckBuildSrcDirectory(buildsrc);
 
             Versioning update = new Versioning(version);
-            update.UpdateVersion(buildsrc, project);
+            var projects = update.UpdateVersion(buildsrc, project);
+
+            NugetCmd cmd = new NugetCmd(buildsrc, projects);
+            cmd.Generate();
 
             
         }
