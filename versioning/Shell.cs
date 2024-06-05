@@ -71,6 +71,8 @@ namespace versioning
 
         public void UpdatePackage(string packageId, string ver, string buildsrc)
         {
+            Console.WriteLine($"PackageId = {packageId}");
+
             Version version = ParseVersion(ver);
             CheckBuildSrcDirectory(buildsrc);
 

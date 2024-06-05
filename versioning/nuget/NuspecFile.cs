@@ -157,7 +157,9 @@ namespace versioning.nuget
                         var _id = (string?)dependency.Attribute("id");
                         if (_id != null && _id == packageId)
                         {
+                            var oldVersion = (string?)dependency.Attribute("version");
                             dependency.SetAttributeValue("version", version?.ToString3());
+                            Console.WriteLine($"Package {packageId} {oldVersion} -> {version}");
                             changed = true;
                         }
                     }

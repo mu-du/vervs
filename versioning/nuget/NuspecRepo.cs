@@ -81,8 +81,10 @@ namespace versioning.nuget
 
         public void UpdatePackageVersion(string packageId, Version version)
         {
-            foreach (NuspecFile nuspec in NuspecFiles.Values)
+            foreach (var kvp in NuspecFiles)
             {
+                NuspecFile nuspec = kvp.Value;
+                Console.WriteLine($"Process nusepc file:{kvp.Key}");
                 nuspec.UpdatePackageVersion(packageId, version);
             }
         }
