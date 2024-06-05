@@ -76,6 +76,11 @@
 
         private int AddHeader(List<string> lines, string cmd, bool usage)
         {
+            lines.Add($"REM ------------------------------------");
+            lines.Add($"REM {cmd}");
+            lines.Add($"REM ");
+            lines.Add($"REM    repo: {Path.GetFileName(repo)}");
+            lines.Add($"REM ------------------------------------");
             lines.Add($"REM Total Nuget Packages: {nuspecs.Count}");
             if (usage)
             {
@@ -92,7 +97,14 @@
             if (nuspecs.Count == 0)
                 return;
 
-            string cmd = "nuget-pack.cmd";
+            string ver = "%1";
+            string cmd = $"nuget-pack.cmd";
+            if (!updateRepo)
+            {
+                ver = $"{version.Major}.{version.Minor}.{version.Build}";
+                cmd = $"nuget-pack-{ver}.cmd";
+            }
+
 
             List<string> lines = new List<string>();
             AddHeader(lines, cmd, usage: false); // nuget pack
