@@ -27,7 +27,7 @@ namespace versioning
 
         private static void Help()
         {
-            Console.WriteLine($"Versioning for Visual Studio, v{System.Reflection.Assembly.GetEntryAssembly().GetName().Version}");
+            Console.WriteLine($"Versioning for Visual Studio, v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}");
             Console.WriteLine("     Copyright Mudu (c) 2024. All rights reserved");
             Console.WriteLine();
         }

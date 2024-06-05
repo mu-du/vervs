@@ -13,7 +13,7 @@ namespace versioning
 
         private static Version ParseVersion(string ver)
         {
-            Version version;
+            Version? version;
             if (!Version.TryParse(ver, out version))
             {
                 Console.WriteLine($"Wrong version number: {ver}");
@@ -50,7 +50,7 @@ namespace versioning
             }
 
             NugetCmd cmd = new NugetCmd(buildsrc);
-            cmd.Generate();
+            cmd.Generate(version: null);
         }
 
 
@@ -64,7 +64,7 @@ namespace versioning
             var projects = update.UpdateVersion(buildsrc, project);
 
             NugetCmd cmd = new NugetCmd(buildsrc, projects);
-            cmd.Generate();
+            cmd.Generate(version);
 
             
         }

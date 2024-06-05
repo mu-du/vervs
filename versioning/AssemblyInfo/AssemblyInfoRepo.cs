@@ -5,8 +5,8 @@ namespace versioning
 {
     class AssemblyInfoRepo
     {
-        private string repo;
-        private string[] files;
+        private readonly string repo;
+        private readonly string[] files;
 
         public AssemblyInfoRepo(string repo)
         {

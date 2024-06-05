@@ -66,8 +66,8 @@ namespace versioning
             else
                 path = Path.GetFullPath(fileName);
 
-            string directory = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
+            string? directory = Path.GetDirectoryName(path);
+            if (directory != null && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
             return path;

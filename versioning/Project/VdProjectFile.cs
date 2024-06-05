@@ -9,8 +9,8 @@ namespace versioning.project
 {
     internal class VdProjectFile : IVersioning
     {
-        private string path;
-        private string[] project;
+        private readonly string path;
+        private readonly string[] project;
 
         public VdProjectFile(string path)
         {
@@ -39,8 +39,8 @@ namespace versioning.project
         {
             key = $"\"{key}\"";
 
-            string _key = null;
-            string oldValue = null;
+            string? _key = null;
+            string? oldValue = null;
 
             int i = 0;
             while (i < project.Length)
@@ -82,7 +82,7 @@ namespace versioning.project
             return false;
         }
 
-        private string GetItem(string item)
+        private static string GetItem(string item)
         {
             item = item.Trim();
             if (item.StartsWith('\"') && item.EndsWith('"'))

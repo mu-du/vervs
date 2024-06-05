@@ -11,13 +11,13 @@ namespace versioning.project
 
     class ProjectFile : IVersioning
     {
-        XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
+        readonly XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
 
-        private string path;
-        private XElement project;
-        private XElement propertyGroup;
+        private readonly string path;
+        private readonly XElement? project;
+        private readonly XElement? propertyGroup;
 
-        private string[] sdks = new string[]
+        private readonly string[] sdks = new string[]
         {
             "Microsoft.NET.Sdk",
             "Microsoft.NET.Sdk.Web",
@@ -29,7 +29,7 @@ namespace versioning.project
             this.path = path;
             this.project = XElement.Load(path);
 
-            string sdk = (string)project.Attribute("Sdk");
+            string? sdk = (string?)project.Attribute("Sdk");
             if (!sdks.Contains(sdk))
             {
                 Console.WriteLine($"not .net core project: \"{path}\"");
@@ -40,9 +40,9 @@ namespace versioning.project
         }
 
 
-        private void AddOrUpdateElement(XElement parent, string name, string value)
+        private void AddOrUpdateElement(XElement? parent, string name, string value)
         {
-            XElement element = parent.Element(xmlns + name);
+            XElement? element = parent?.Element(xmlns + name);
             if (element != null)
             {
                 element.Value = value;
@@ -50,7 +50,7 @@ namespace versioning.project
             else
             {
                 element = new XElement(name, value);
-                parent.Add(element);
+                parent?.Add(element);
             }
         }
 
@@ -72,7 +72,7 @@ namespace versioning.project
 
         private bool SetValue(string key, string newValue, bool addIfNotExist = false)
         {
-            XElement xElement = propertyGroup.Element(key);
+            XElement? xElement = propertyGroup?.Element(key);
             if (xElement != null)
             {
                 string oldValue = xElement.Value;
@@ -86,7 +86,7 @@ namespace versioning.project
             else if(addIfNotExist)
             {
                 xElement = new XElement(key, newValue);
-                propertyGroup.Add(xElement);
+                propertyGroup?.Add(xElement);
                 Console.WriteLine($"{key} = {newValue}");
             }
 
@@ -121,7 +121,7 @@ namespace versioning.project
 
         public void Save()
         {
-            project.Save(path, SaveOptions.OmitDuplicateNamespaces);
+            project?.Save(path, SaveOptions.OmitDuplicateNamespaces);
             Console.WriteLine($"Completed {Path.GetFileNameWithoutExtension(path)}");
         }
 

@@ -9,10 +9,10 @@
         private readonly string repo;
         private readonly string nugetPath;
 
-        private List<string> nuspecs;
-        private string[] nuspecFiles;
+        private readonly List<string> nuspecs;
+        private readonly string[] nuspecFiles;
 
-        public string OutputDirectory { get; set; } = Environment.GetEnvironmentVariable("LocalNugetPath");
+        public string OutputDirectory { get; set; } = Environment.GetEnvironmentVariable("LocalNugetPath") ?? ".";
 
         /// <summary>
         /// 
@@ -34,7 +34,7 @@
             {
                 this.nuspecFiles = Directory.GetFiles(nugetPath, "*.nuspec");
 
-                if (projects.Count() != 0)
+                if (projects.Any())
                 {
                     this.nuspecFiles = this.nuspecFiles
                     .Where(x => projects.Contains(Path.GetFileNameWithoutExtension(x)))
@@ -48,7 +48,7 @@
 
                 Console.WriteLine($"Total {nuspecs.Count} .nuspec files");
             }
-            catch (DirectoryNotFoundException ex)
+            catch (DirectoryNotFoundException)
             {
                 this.nuspecFiles = new string[] { };
                 this.nuspecs = new List<string>();
@@ -57,12 +57,12 @@
             }
         }
 
-        public void Generate()
+        public void Generate(Version? version)
         {
             CreatePackFile();
-            CreatePushFile();
+            CreatePushFile(version);
             CreateDeleteFile();
-            CreateInstallFile();
+            CreateInstallFile(version);
         }
 
 
@@ -92,18 +92,25 @@
             Save(cmd, lines);
         }
 
-        public void CreatePushFile()
+        public void CreatePushFile(Version? version)
         {
             if (nuspecs.Count == 0)
                 return;
 
-            string cmd = "nuget-push.cmd";
+            string ver = "%1";
+            string cmd = $"nuget-push.cmd";
+            if (version != null)
+            {
+                ver = $"{version.Major}.{version.Minor}.{version.Build}";
+                cmd = $"nuget-push-{ver}.cmd";
+            }
+
             List<string> lines = new List<string>();
             AddHeader(lines, cmd);
 
             var pushes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => $"nuget push {OutputDirectory}\\{x}.%1.nupkg -Source https://atmsnuget.azurewebsites.net/api/v2/package");
+                .Select(x => $"nuget push {OutputDirectory}\\{x}.{ver}.nupkg -Source https://atmsnuget.azurewebsites.net/api/v2/package");
             lines.AddRange(pushes);
 
             Save(cmd, lines);
@@ -128,19 +135,26 @@
         }
 
 
-        public void CreateInstallFile()
+        public void CreateInstallFile(Version? version)
         {
             if (nuspecs.Count == 0)
                 return;
 
+            string ver = "%1";
             string cmd = "nuget-install.cmd";
+            if (version != null)
+            {
+                ver = $"{version.Major}.{version.Minor}.{version.Build}";
+                cmd = $"nuget-install-{ver}.cmd";
+            }
+
 
             List<string> lines = new List<string>();
             AddHeader(lines, cmd);
 
             var deletes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x).ToLower())
-                .Select(x => $"install-package {x} -Version %1");
+                .Select(x => $"install-package {x} -Version {ver}");
             lines.AddRange(deletes);
 
             Save(cmd, lines);
@@ -154,7 +168,7 @@
             Console.WriteLine($"Generated: {path}");
         }
 
-        private string PackCommand(string nuspec, string outputDirectory)
+        private static string PackCommand(string nuspec, string outputDirectory)
         {
             if (string.IsNullOrWhiteSpace(outputDirectory))
                 return $"nuget pack {nuspec}";

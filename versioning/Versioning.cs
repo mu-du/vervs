@@ -12,7 +12,8 @@ namespace versioning
 {
     class Versioning
     {
-        private Version version;
+        private readonly Version version;
+
         public Versioning(Version version)
         {
             this.version = version;

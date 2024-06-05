@@ -7,7 +7,7 @@ namespace versioning.project
     {
         private readonly string repo;
         private string[] csProjectFiles;
-        private string[] vdProjectFiles;
+        private readonly string[] vdProjectFiles;
 
         public ProjectRepo(string repo)
         {

@@ -11,7 +11,7 @@ namespace versioning.nuget
     class NuspecRepo : IVersioning
     {
         private Dictionary<string, NuspecFile> NuspecFiles { get; } = new Dictionary<string, NuspecFile>();
-        private string root;
+        private readonly string root;
 
         public NuspecRepo(string repo)
         {
@@ -102,7 +102,7 @@ namespace versioning.nuget
             UpdateVersion(ver, NuspecFiles.Values);
         }
 
-        private void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
+        private static void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
         {
             foreach (var nuspec in nuspecFiles)
             {
