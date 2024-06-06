@@ -80,7 +80,7 @@
             if (usage)
             {
                 lines.Add($"REM Usage: ./{cmd} <version>");
-                lines.Add($"REM Example: ./{cmd} {version}");
+                lines.Add($"REM Example: ./{cmd} {version.ToString3()}");
             }
             lines.Add("");
 
