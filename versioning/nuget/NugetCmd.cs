@@ -37,7 +37,7 @@
             this.version = version;
 
             this.nugetPath = Path.Combine(repo, ".nuget");
-            if(!Directory.Exists(nugetPath))
+            if (!Directory.Exists(nugetPath))
             {
                 Directory.CreateDirectory(nugetPath);
             }
@@ -65,7 +65,7 @@
             CreatePackFile();
             CreatePushFile();
             CreateDeleteFile();
-            CreateInstallFile();
+            CreateUpdatePackageFile();
         }
 
 
@@ -73,8 +73,9 @@
         {
             lines.Add($"REM ------------------------------------");
             lines.Add($"REM {cmd}");
-            lines.Add($"REM ");
+            lines.Add($"REM");
             lines.Add($"REM    repo: {Path.GetFileName(repo)}");
+            lines.Add($"REM    created: {DateTime.Now}");
             lines.Add($"REM ------------------------------------");
             lines.Add($"REM Total Nuget Packages: {nuspecs.Count}");
             if (usage)
@@ -153,17 +154,17 @@
         }
 
 
-        public void CreateInstallFile()
+        public void CreateUpdatePackageFile()
         {
             if (nuspecs.Count == 0)
                 return;
 
             string ver = "%1";
-            string cmd = "nuget-install.cmd";
+            string cmd = "nuget-update.cmd";
             if (!updateRepo)
             {
                 ver = $"{version.Major}.{version.Minor}.{version.Build}";
-                cmd = $"nuget-install-{ver}.cmd";
+                cmd = $"nuget-update-{ver}.cmd";
             }
 
 
@@ -172,7 +173,7 @@
 
             var deletes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x).ToLower())
-                .Select(x => $"install-package {x} -Version {ver}");
+                .Select(x => $"Update-Package {x} -Version {ver}");
             lines.AddRange(deletes);
 
             Save(cmd, lines);
