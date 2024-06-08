@@ -18,7 +18,7 @@ namespace versioning.nuget
             this.root = repo;
 
             string[] files = Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories);
-            files = files.Where(x => x.IndexOf("\\obj\\Debug\\") == -1).ToArray();
+            files = files.Where(x => x.IndexOf("\\obj\\") == -1).ToArray();
 
             foreach (string file in files)
             {
@@ -54,7 +54,7 @@ namespace versioning.nuget
             UpdateVersion(ver, new NuspecRepo[] { });
         }
 
-        public List<string> UpdateVersion(Version ver, string project)
+        public List<string> UpdateProjectVersion(Version ver, string project)
         {
             List<NuspecFile> files = new List<NuspecFile>();
             foreach (NuspecFile nuspec in NuspecFiles.Values)
@@ -77,6 +77,16 @@ namespace versioning.nuget
 
             UpdateVersion(ver, files);
             return files.Select(x => x.Id).ToList();
+        }
+
+        public void UpdatePackageVersion(string packageId, Version version)
+        {
+            foreach (var kvp in NuspecFiles)
+            {
+                NuspecFile nuspec = kvp.Value;
+                Console.WriteLine($"Process nusepc file:{kvp.Key}");
+                nuspec.UpdatePackageVersion(packageId, version);
+            }
         }
 
         /// <summary>

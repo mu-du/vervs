@@ -37,32 +37,27 @@
             this.version = version;
 
             this.nugetPath = Path.Combine(repo, ".nuget");
-
-            try
+            if (!Directory.Exists(nugetPath))
             {
-                this.nuspecFiles = Directory.GetFiles(nugetPath, "*.nuspec");
-
-                if (projects.Any())
-                {
-                    this.nuspecFiles = this.nuspecFiles
-                    .Where(x => projects.Contains(Path.GetFileNameWithoutExtension(x)))
-                    .ToArray();
-                }
-
-                this.nuspecs = nuspecFiles
-                    .Select(x => Path.GetFileName(x))
-                    .OrderBy(x => x)
-                    .ToList();
-
-                Console.WriteLine($"Total {nuspecs.Count} .nuspec files");
+                Directory.CreateDirectory(nugetPath);
             }
-            catch (DirectoryNotFoundException)
+
+            var _nuspecFiles = Directory.GetFiles(repo, "*.nuspec", SearchOption.AllDirectories);
+            this.nuspecFiles = _nuspecFiles.Where(x => x.IndexOf("\\obj\\") == -1).ToArray();
+
+            if (projects.Any())
             {
-                this.nuspecFiles = new string[] { };
-                this.nuspecs = new List<string>();
-
-                Console.WriteLine($"Directory not found: {nugetPath}");
+                this.nuspecFiles = this.nuspecFiles
+                .Where(x => projects.Contains(Path.GetFileNameWithoutExtension(x)))
+                .ToArray();
             }
+
+            this.nuspecs = nuspecFiles
+                .Select(x => Path.GetFileName(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            Console.WriteLine($"Total {nuspecs.Count} .nuspec files");
         }
 
         public void Generate()
@@ -70,7 +65,7 @@
             CreatePackFile();
             CreatePushFile();
             CreateDeleteFile();
-            CreateInstallFile();
+            CreateUpdatePackageFile();
         }
 
 
@@ -78,14 +73,15 @@
         {
             lines.Add($"REM ------------------------------------");
             lines.Add($"REM {cmd}");
-            lines.Add($"REM ");
+            lines.Add($"REM");
             lines.Add($"REM    repo: {Path.GetFileName(repo)}");
+            lines.Add($"REM    created: {DateTime.Now}");
             lines.Add($"REM ------------------------------------");
             lines.Add($"REM Total Nuget Packages: {nuspecs.Count}");
             if (usage)
             {
                 lines.Add($"REM Usage: ./{cmd} <version>");
-                lines.Add($"REM Example: ./{cmd} {version}");
+                lines.Add($"REM Example: ./{cmd} {version.ToString3()}");
             }
             lines.Add("");
 
@@ -158,17 +154,17 @@
         }
 
 
-        public void CreateInstallFile()
+        public void CreateUpdatePackageFile()
         {
             if (nuspecs.Count == 0)
                 return;
 
             string ver = "%1";
-            string cmd = "nuget-install.cmd";
+            string cmd = "nuget-update.cmd";
             if (!updateRepo)
             {
                 ver = $"{version.Major}.{version.Minor}.{version.Build}";
-                cmd = $"nuget-install-{ver}.cmd";
+                cmd = $"nuget-update-{ver}.cmd";
             }
 
 
@@ -177,7 +173,7 @@
 
             var deletes = nuspecs
                 .Select(x => Path.GetFileNameWithoutExtension(x).ToLower())
-                .Select(x => $"install-package {x} -Version {ver}");
+                .Select(x => $"Update-Package {x} -Version {ver}");
             lines.AddRange(deletes);
 
             Save(cmd, lines);

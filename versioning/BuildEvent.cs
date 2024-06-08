@@ -55,7 +55,7 @@ namespace versioning
 
 
             File.WriteAllLines(fullPath, lines);
-            Console.WriteLine($"created {fullPath}");
+            Console.WriteLine($"Created {fullPath}");
         }
 
         private string GetFullPath(string fileName)
