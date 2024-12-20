@@ -8,7 +8,7 @@ using System.IO;
 using versioning.project;
 using versioning.nuget;
 
-namespace versioning
+namespace versioning.version
 {
     class Versioning
     {

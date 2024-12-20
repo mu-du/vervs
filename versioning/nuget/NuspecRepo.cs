@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
 using static System.Net.WebRequestMethods;
+using versioning.version;
 
 namespace versioning.nuget
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace versioning
+namespace versioning.shell
 {
     internal class MainMenu
     {
@@ -17,10 +17,10 @@ namespace versioning
 
         public MainMenu()
         {
-            this.shell = new Shell();
+            shell = new Shell();
 
-            this.versionArgument = new Argument<string>("version", () => "1.0.0.0", $"Build version.");
-            this.canGenerateCmdOption = new Option<bool>(new[] { "-c", "--cmd" }, () => false, $"Generate nuget command files.");
+            versionArgument = new Argument<string>("version", () => "1.0.0.0", $"Build version.");
+            canGenerateCmdOption = new Option<bool>(new[] { "-c", "--cmd" }, () => false, $"Generate nuget command files.");
         }
 
         public int Run(string[] args, string title)

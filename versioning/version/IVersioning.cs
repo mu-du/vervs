@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace versioning
+namespace versioning.version
 {
     internal interface IVersioning
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace versioning
+namespace versioning.shell
 {
     public class History
     {
@@ -17,7 +17,7 @@ namespace versioning
                 {
                     Interlocked.CompareExchange(ref _syncRoot, new object(), null);
                 }
-                
+
                 return _syncRoot;
             }
         }

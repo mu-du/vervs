@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
-using versioning.nuget;
 
-namespace versioning
+using versioning.nuget;
+using versioning.version;
+
+namespace versioning.shell
 {
     class Shell
     {

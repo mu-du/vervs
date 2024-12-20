@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace versioning
+namespace versioning.version
 {
     internal static class Extension
     {
@@ -18,7 +18,7 @@ namespace versioning
             if (version.Revision != -1)
                 return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
             else
-                return ToString3(version);
+                return version.ToString3();
         }
     }
 }

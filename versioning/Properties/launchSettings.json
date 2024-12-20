@@ -2,10 +2,10 @@
   "profiles": {
     "versioning": {
       "commandName": "Project",
-      "commandLineArgs-1": "update-repo 6.7.5.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1",
+      "commandLineArgs": "update-repo 6.7.35.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1",
       "commandLineArgs-2": "update-project 6.7.5.0 -r C:\\src\\trafficware\\atms.core -p tw.Database",
       "commandLineArgs-3": "update-package log4net 2.0.15 -r C:\\src\\trafficware\\atms.core",
-      "commandLineArgs": "update-project -h"
+      "commandLineArgs-4": "update-project -h"
     }
   }
 }

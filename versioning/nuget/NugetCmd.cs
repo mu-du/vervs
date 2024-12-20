@@ -1,4 +1,6 @@
-﻿namespace versioning.nuget
+﻿using versioning.version;
+
+namespace versioning.nuget
 {
     /// <summary>
     /// Powershell

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.IO;
+using versioning.version;
 
 namespace versioning.nuget
 {

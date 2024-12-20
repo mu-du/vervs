@@ -5,6 +5,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.IO;
 using System.Xml.Linq;
+using versioning.version;
 
 namespace versioning.project
 {
@@ -42,7 +43,7 @@ namespace versioning.project
 
         private void AddOrUpdateElement(XElement? parent, string name, string value)
         {
-            XElement? element = parent?.Element(xmlns + name);
+            XElement? element = parent?.Element(name);
             if (element != null)
             {
                 element.Value = value;
@@ -68,6 +69,48 @@ namespace versioning.project
             SetValue("Version", ver.ToString3(), addIfNotExist: true);
             SetValue("AssemblyVersion", ver.ToString());
             SetValue("FileVersion", ver.ToString());
+
+            UpateTemporarily(ver);
+        }
+
+        private void UpateTemporarily(Version ver)
+        {
+            string? packageId = GetValue("PackageId");
+            string? name = packageId?.Replace("tw.", "").Replace(".", " ");
+
+            UpdateAuthors("Fuhua Jiang");
+            UpdateDescription($"Atms Core {packageId} Library");
+            UpdateCompany("Cubic-ITS");
+            UpdateCopyright("Copyright 2020-2024");
+            UpdatePropertyGroup("PackageProjectUrl", "https://bitbucket.org/cubic-its/atms.core");
+            UpdatePropertyGroup("Title", $"Trafficware {name}");
+            UpdatePropertyGroup("PackageReleaseNotes", ReleaseNotes(ver));
+        }
+
+        private string ReleaseNotes(Version ver)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"{DateTime.Today:MM/dd/yyyy} v{ver.ToString3()}");
+            sb.AppendLine("Improvements/Enhancements:");
+            sb.AppendLine("1.");
+            sb.AppendLine("2.");
+            sb.AppendLine("Bug Fixes:");
+            sb.AppendLine("1.");
+            sb.AppendLine("2.");
+
+            return sb.ToString();
+        }
+
+        private string? GetValue(string key)
+        {
+            XElement? xElement = propertyGroup?.Element(key);
+            if (xElement != null)
+            {
+                return xElement.Value;
+            }
+
+            return null;
         }
 
         private bool SetValue(string key, string newValue, bool addIfNotExist = false)
@@ -83,7 +126,7 @@ namespace versioning.project
                     return true;
                 }
             }
-            else if(addIfNotExist)
+            else if (addIfNotExist)
             {
                 xElement = new XElement(key, newValue);
                 propertyGroup?.Add(xElement);
