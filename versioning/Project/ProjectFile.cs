@@ -66,11 +66,20 @@ namespace versioning.project
             if (propertyGroup == null)
                 return;
 
-            SetValue("Version", ver.ToString3(), addIfNotExist: true);
+            string _ver = GetValue("Version") ?? string.Empty;
+            if (_ver.StartsWith("$(") && _ver.EndsWith(")"))
+            {
+                // skip if environment variable is used
+            }
+            else
+            {
+                SetValue("Version", ver.ToString3(), addIfNotExist: true);
+            }
+
             SetValue("AssemblyVersion", ver.ToString());
             SetValue("FileVersion", ver.ToString());
 
-            UpateTemporarily(ver);
+            //UpateTemporarily(ver);
         }
 
         private void UpateTemporarily(Version ver)
@@ -78,7 +87,7 @@ namespace versioning.project
             string? packageId = GetValue("PackageId");
             string? name = packageId?.Replace("tw.", "").Replace(".", " ");
 
-            UpdateAuthors("Fuhua Jiang");
+            UpdateAuthors("Atms Team");
             UpdateDescription($"Atms Core {packageId} Library");
             UpdateCompany("Cubic-ITS");
             UpdateCopyright("Copyright 2020-2024");
@@ -91,7 +100,7 @@ namespace versioning.project
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
-            sb.AppendLine($"{DateTime.Today:MM/dd/yyyy} v{ver.ToString3()}");
+            sb.AppendLine($"{DateTime.Today:MM/dd/yyyy} v{ver.ToString2()}.x");
             sb.AppendLine("Improvements/Enhancements:");
             sb.AppendLine("1.");
             sb.AppendLine("2.");

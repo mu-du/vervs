@@ -45,6 +45,14 @@ namespace versioning.version
                 CreateFWVersion(file, version);
             }
 
+            //overwrite app.rc
+            files = Directory.GetFiles(repo, "app.rc", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                CreateRCVersion(file, version);
+            }
+
+
         }
 
         /// <summary>
@@ -100,5 +108,41 @@ namespace versioning.version
             Console.WriteLine($"Completed {path}");
         }
 
+        private static void CreateRCVersion(string path, Version ver)
+        {
+            if (!File.Exists(path))
+                return;
+
+            string[] lines = File.ReadAllLines(path);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = Replace(lines[i], "FILEVERSION", ver.ToString4c());
+                lines[i] = Replace(lines[i], "PRODUCTVERSION", ver.ToString4c());
+                lines[i] = Replace(lines[i], $"{Quote("FileVersion")},", Quote(ver.ToString4()));
+                lines[i] = Replace(lines[i], $"{Quote("ProductVersion")},", Quote(ver.ToString4()));
+            }
+
+
+            File.WriteAllLines(path, lines);
+            Console.WriteLine($"Completed {path}");
+        }
+
+        private static string Quote(string text)
+        {
+            return $"\"{text}\"";
+        }
+
+        private static string Replace(string line, string key, string ver)
+        {
+            key += " ";
+            int index = line.IndexOf(key);
+
+            if (index != -1)
+            {
+                return line.Substring(0, index + key.Length) + ver;
+            }
+
+            return line;
+        }
     }
 }
