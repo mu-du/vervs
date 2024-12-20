@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-using versioning.version;
+using Versioning.version;
 
-namespace versioning.project
+namespace Versioning.Project
 {
     class ProjectRepo : IVersioning
     {

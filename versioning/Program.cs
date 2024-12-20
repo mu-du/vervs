@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-using versioning.shell;
+using Versioning.Shell;
 
-namespace versioning
+namespace Versioning
 {
     class Program
     {

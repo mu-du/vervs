@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
-using versioning.project;
-using versioning.nuget;
+using Versioning.Project;
+using Versioning.NuGet;
 
-namespace versioning.version
+namespace Versioning.version
 {
     class Versioning
     {

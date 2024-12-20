@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
 using static System.Net.WebRequestMethods;
-using versioning.version;
+using Versioning.version;
 
-namespace versioning.nuget
+namespace Versioning.NuGet
 {
     class NuspecRepo : IVersioning
     {

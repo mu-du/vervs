@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.IO;
-using versioning.version;
+using Versioning.version;
 
-namespace versioning.nuget
+namespace Versioning.NuGet
 {
     class NuspecFile
     {

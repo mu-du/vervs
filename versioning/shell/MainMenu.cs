@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace versioning.shell
+namespace Versioning.Shell
 {
     internal class MainMenu
     {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using versioning.version;
+using Versioning.version;
 
-namespace versioning.project
+namespace Versioning.Project
 {
     internal class VdProjectFile : IVersioning
     {

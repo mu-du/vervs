@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 
-using versioning.nuget;
-using versioning.version;
+using Versioning.NuGet;
+using Versioning.version;
 
-namespace versioning.shell
+namespace Versioning.Shell
 {
     class Shell
     {
@@ -72,7 +72,7 @@ namespace versioning.shell
 
             try
             {
-                Versioning update = new Versioning(version);
+                version.Versioning update = new version.Versioning(version);
                 update.UpdateVersion(repo);
 
                 if (!string.IsNullOrEmpty(envFile))
@@ -116,7 +116,7 @@ namespace versioning.shell
 
             try
             {
-                Versioning update = new Versioning(version);
+                version.Versioning update = new version.Versioning(version);
                 var projects = update.UpdateProjectVersion(repo, project);
 
                 if (nugetCmd)
@@ -141,7 +141,7 @@ namespace versioning.shell
 
             try
             {
-                Versioning update = new Versioning(version);
+                version.Versioning update = new version.Versioning(version);
                 update.UpdatePackageVersion(repo, packageId);
             }
             catch (Exception ex)

@@ -5,9 +5,9 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.IO;
 using System.Xml.Linq;
-using versioning.version;
+using Versioning.version;
 
-namespace versioning.project
+namespace Versioning.Project
 {
 
     class ProjectFile : IVersioning

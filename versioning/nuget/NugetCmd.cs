@@ -1,6 +1,6 @@
-﻿using versioning.version;
+﻿using Versioning.version;
 
-namespace versioning.nuget
+namespace Versioning.NuGet
 {
     /// <summary>
     /// Powershell
