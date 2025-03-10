@@ -4,19 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.IO;
+using static System.Net.WebRequestMethods;
+using Versioning.version;
 
-namespace versioning.nuget
+namespace Versioning.NuGet
 {
     class NuspecRepo : IVersioning
     {
         private Dictionary<string, NuspecFile> NuspecFiles { get; } = new Dictionary<string, NuspecFile>();
-        private string root;
+        private readonly string root;
 
         public NuspecRepo(string repo)
         {
             this.root = repo;
 
             string[] files = Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories);
+            files = files.Where(x => x.IndexOf("\\obj\\") == -1).ToArray();
+
             foreach (string file in files)
             {
                 try
@@ -51,6 +55,41 @@ namespace versioning.nuget
             UpdateVersion(ver, new NuspecRepo[] { });
         }
 
+        public List<string> UpdateProjectVersion(Version ver, string project)
+        {
+            List<NuspecFile> files = new List<NuspecFile>();
+            foreach (NuspecFile nuspec in NuspecFiles.Values)
+            {
+                if (nuspec.Id == project)
+                {
+                    nuspec.Version = ver;
+                    files.Add(nuspec);
+                }
+                else
+                {
+                    var dependencies = nuspec.GetDependecies();
+                    if (dependencies.Contains(project))
+                    {
+                        nuspec.Version = ver;
+                        files.Add(nuspec);
+                    }
+                }
+            }
+
+            UpdateVersion(ver, files);
+            return files.Select(x => x.Id).ToList();
+        }
+
+        public void UpdatePackageVersion(string packageId, Version version)
+        {
+            foreach (var kvp in NuspecFiles)
+            {
+                NuspecFile nuspec = kvp.Value;
+                Console.WriteLine($"Process nusepc file:{kvp.Key}");
+                nuspec.UpdatePackageVersion(packageId, version);
+            }
+        }
+
         /// <summary>
         /// Update dependency version from other repositories
         /// </summary>
@@ -74,7 +113,7 @@ namespace versioning.nuget
             UpdateVersion(ver, NuspecFiles.Values);
         }
 
-        private void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
+        private static void UpdateVersion(Version ver, IEnumerable<NuspecFile> nuspecFiles)
         {
             foreach (var nuspec in nuspecFiles)
             {

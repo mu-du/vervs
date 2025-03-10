@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Versioning.version;
 
-namespace versioning.project
+namespace Versioning.Project
 {
     internal class VdProjectFile : IVersioning
     {
-        private string path;
-        private string[] project;
+        private readonly string path;
+        private readonly string[] project;
 
         public VdProjectFile(string path)
         {
@@ -28,17 +29,19 @@ namespace versioning.project
             var L2 = project.Where(x => x.IndexOf(_PackageCode) > 0).ToArray();
             var L3 = project.Where(x => x.IndexOf(_ProductVersion) > 0).ToArray();
 
-            SetValue("ProductCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");
-            SetValue("PackageCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");
-            SetValue("ProductVersion", "8:", "", $"{ver.Major}.{ver.Minor}.{ver.Build}");
+            if (SetValue("ProductVersion", "8:", "", ver.ToString3()))
+            {
+                SetValue("ProductCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");
+                SetValue("PackageCode", "8:{", "}", $"{Guid.NewGuid().ToString().ToUpper()}");
+            }
         }
 
-        private void SetValue(string key, string prefix, string suffix, string value)
+        private bool SetValue(string key, string prefix, string suffix, string value)
         {
             key = $"\"{key}\"";
 
-            string _key = null;
-            string _value = null;
+            string? _key = null;
+            string? oldValue = null;
 
             int i = 0;
             while (i < project.Length)
@@ -50,9 +53,9 @@ namespace versioning.project
                     string left = line.Substring(0, index);
                     string right = line.Substring(index + 1);
                     _key = GetItem(left);
-                    _value = GetItem(right);
+                    oldValue = GetItem(right);
 
-                    if (_value.StartsWith(prefix) && _value.EndsWith(suffix))
+                    if (oldValue.StartsWith(prefix) && oldValue.EndsWith(suffix))
                     {
                         break;
                     }
@@ -61,18 +64,26 @@ namespace versioning.project
                 i++;
             }
 
-            if (_value != null)
+            if (oldValue != null)
             {
-                var newLine = project[i].Replace(_value, $"{prefix}{value}{suffix}");
-                project[i] = newLine; 
+                string newValue = $"{prefix}{value}{suffix}";
+                if (oldValue != newValue)
+                {
+                    var newLine = project[i].Replace(oldValue, newValue);
+                    project[i] = newLine;
+                    Console.WriteLine($"{_key} = {oldValue} -> {newValue}");
+                    return true;
+                }
             }
             else
             {
                 Console.Error.WriteLine($"Cannot find key: {key} in file: {path}");
             }
+
+            return false;
         }
 
-        private string GetItem(string item)
+        private static string GetItem(string item)
         {
             item = item.Trim();
             if (item.StartsWith('\"') && item.EndsWith('"'))
@@ -86,6 +97,7 @@ namespace versioning.project
         public void Save()
         {
             File.WriteAllLines(path, project);
+            Console.WriteLine($"Completed {Path.GetFileNameWithoutExtension(path)}");
         }
     }
 }

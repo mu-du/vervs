@@ -1,8 +1,11 @@
 {
   "profiles": {
     "versioning": {
-        "commandName": "Project",
-        "commandLineArgs": "2.0.1.0 C:\\src\\trafficware\\tw.spm.data"
+      "commandName": "Project",
+      "commandLineArgs": "update-repo 6.7.37.0 -r C:\\src\\trafficware\\atms.core -e vervs.ps1",
+      "commandLineArgs-2": "update-project 6.7.5.0 -r C:\\src\\trafficware\\atms.core -p tw.Database",
+      "commandLineArgs-3": "update-package log4net 2.0.15 -r C:\\src\\trafficware\\atms.core",
+      "commandLineArgs-4": "update-project -h"
     }
   }
 }
